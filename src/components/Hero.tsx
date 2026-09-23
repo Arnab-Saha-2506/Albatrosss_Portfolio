@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
+import { useResumeModal } from "@/context/ResumeModalContext";
 
 export default function Hero() {
+  const { openResumeModal } = useResumeModal();
   const terminalLines = [
     { text: "$ java ArnabSaha", delay: 250, type: "cmd" },
     { text: "> Initializing backend engineer...", delay: 650, type: "system" },
@@ -108,14 +110,14 @@ export default function Hero() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </a>
 
-              <a
-                href={PERSONAL_INFO.resumePdf}
-                download="ArnabSaha_Resume.pdf"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400 font-semibold text-sm transition-all active:scale-95 shadow-sm backdrop-blur-sm"
+              <button
+                type="button"
+                onClick={openResumeModal}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400 font-semibold text-sm transition-all active:scale-95 shadow-sm backdrop-blur-sm cursor-pointer"
               >
                 <FileDown className="w-4 h-4 text-emerald-400" />
-                <span>Download Resume</span>
-              </a>
+                <span>View Resume</span>
+              </button>
             </div>
 
             {/* Social Links */}

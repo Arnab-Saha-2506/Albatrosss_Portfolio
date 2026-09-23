@@ -5,8 +5,10 @@ import { Terminal, ArrowUpRight, FileDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
+import { useResumeModal } from "@/context/ResumeModalContext";
 
 export default function Navbar() {
+  const { openResumeModal } = useResumeModal();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -174,14 +176,14 @@ export default function Navbar() {
 
             {/* Right: Hamburger button for ALL screens */}
             <div className="flex items-center gap-2.5 shrink-0">
-              <a
-                href={PERSONAL_INFO.resumePdf}
-                download="ArnabSaha_Resume.pdf"
-                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400 font-mono text-xs font-medium transition-all"
+              <button
+                type="button"
+                onClick={openResumeModal}
+                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white border border-white/20 hover:border-emerald-400 font-mono text-xs font-medium transition-all cursor-pointer"
               >
                 <span>Resume</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
-              </a>
+              </button>
 
               {/* Animated Hamburger Toggle Button */}
               <button
@@ -309,14 +311,17 @@ export default function Navbar() {
                   </div>
 
                   <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-                    <a
-                      href={PERSONAL_INFO.resumePdf}
-                      download="ArnabSaha_Resume.pdf"
-                      className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        openResumeModal();
+                      }}
+                      className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono flex items-center justify-center gap-2 transition-all shadow-md shadow-emerald-500/20 active:scale-95 cursor-pointer"
                     >
                       <FileDown className="w-4 h-4" />
-                      <span>Download Official Resume (PDF)</span>
-                    </a>
+                      <span>View Official Resume (PDF)</span>
+                    </button>
 
                     <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
                       <a

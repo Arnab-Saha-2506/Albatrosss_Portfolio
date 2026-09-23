@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
+import { useResumeModal } from "@/context/ResumeModalContext";
 
 export default function Contact() {
+  const { openResumeModal } = useResumeModal();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,19 +163,19 @@ export default function Contact() {
               </span>
 
               <div className="flex flex-col gap-3 font-mono text-xs">
-                <a
-                  href={PERSONAL_INFO.resumePdf}
-                  download="ArnabSaha_Resume.pdf"
-                  className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500/60 hover:bg-slate-100 text-slate-800 flex items-center justify-between transition-all group shadow-sm"
+                <button
+                  type="button"
+                  onClick={openResumeModal}
+                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-500/60 hover:bg-slate-100 text-slate-800 flex items-center justify-between transition-all group shadow-sm cursor-pointer text-left font-mono text-xs"
                 >
                   <div className="flex items-center gap-2.5">
                     <FileDown className="w-4 h-4 text-emerald-600" />
-                    <span className="font-bold text-slate-900">Download Official Resume (PDF)</span>
+                    <span className="font-bold text-slate-900">View Official Resume (PDF)</span>
                   </div>
                   <span className="text-xs text-slate-500 group-hover:text-emerald-600 font-semibold">
-                    2026 Edition
+                    Preview &amp; Download
                   </span>
-                </a>
+                </button>
 
                 <a
                   href={PERSONAL_INFO.linkedin}
