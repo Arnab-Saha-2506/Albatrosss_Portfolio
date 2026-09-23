@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { ResumeModalProvider } from "@/context/ResumeModalContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -59,7 +60,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} dark scroll-smooth`}
     >
       <body className="min-h-screen bg-[#080b11] text-[#e6edf3] font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
-        {children}
+        <ResumeModalProvider>{children}</ResumeModalProvider>
       </body>
     </html>
   );
