@@ -9,6 +9,8 @@ import {
   Copy,
   Terminal,
   Power,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "./Icons";
 import { PERSONAL_INFO } from "@/data/portfolioData";
@@ -16,6 +18,8 @@ import { PERSONAL_INFO } from "@/data/portfolioData";
 export default function Contact() {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,15 +33,48 @@ export default function Contact() {
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const mailtoUrl = `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(
-      formData.subject || "Backend Engineering Opportunity"
-    )}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-    )}`;
-    window.location.href = mailtoUrl;
-    setFormSubmitted(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          header: formData.subject || "Backend Engineering Opportunity",
+          message: formData.message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to log dispatch payload.");
+      }
+
+      setFormSubmitted(true);
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (err: unknown) {
+      console.error("Submission failed:", err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "Failed to transmit dispatch payload. Please try again.";
+      setSubmitError(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -180,7 +217,7 @@ export default function Contact() {
                   <span>dispatch_message.sh</span>
                 </div>
                 <span className="text-xs font-mono text-slate-500 font-semibold">
-                  SMTP / Direct Ingress
+                  Sheets / Direct Ingress
                 </span>
               </div>
 
@@ -190,13 +227,16 @@ export default function Contact() {
                     <Check className="w-6 h-6" />
                   </div>
                   <h4 className="text-lg font-bold text-slate-900">
-                    Mail Client Invoked Successfully
+                    Dispatch Logged Successfully
                   </h4>
                   <p className="text-xs text-slate-600 max-w-md mx-auto">
-                    Your email client has been prepared with your message payload to {PERSONAL_INFO.email}.
+                    Your message payload has been recorded in our server. Arnab will get back to you soon. Thank you for reaching out!
                   </p>
                   <button
-                    onClick={() => setFormSubmitted(false)}
+                    onClick={() => {
+                      setFormSubmitted(false);
+                      setSubmitError(null);
+                    }}
                     className="text-xs text-emerald-600 font-bold hover:underline pt-2 cursor-pointer"
                   >
                     Send another dispatch
@@ -204,6 +244,16 @@ export default function Contact() {
                 </div>
               ) : (
                 <form onSubmit={handleFormSubmit} className="space-y-4 font-sans text-xs">
+                  {submitError && (
+                    <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <span className="font-bold">Transmission Error: </span>
+                        <span>{submitError}</span>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <label className="font-mono text-slate-700 text-xs flex items-center gap-1 font-bold">
@@ -213,12 +263,13 @@ export default function Contact() {
                       <input
                         type="text"
                         required
+                        disabled={isSubmitting}
                         value={formData.name}
                         onChange={(e) =>
                           setFormData({ ...formData, name: e.target.value })
                         }
                         placeholder="e.g. Sarah Jenkins (Tech Lead)"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors font-mono"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white disabled:opacity-60 transition-colors font-mono"
                       />
                     </div>
 
@@ -230,12 +281,13 @@ export default function Contact() {
                       <input
                         type="email"
                         required
+                        disabled={isSubmitting}
                         value={formData.email}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
                         placeholder="e.g. sjenkins@company.com"
-                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors font-mono"
+                        className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white disabled:opacity-60 transition-colors font-mono"
                       />
                     </div>
                   </div>
@@ -246,12 +298,13 @@ export default function Contact() {
                     </label>
                     <input
                       type="text"
+                      disabled={isSubmitting}
                       value={formData.subject}
                       onChange={(e) =>
                         setFormData({ ...formData, subject: e.target.value })
                       }
                       placeholder="Backend Engineering Opportunity / Microservices Collaboration"
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors font-mono"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white disabled:opacity-60 transition-colors font-mono"
                     />
                   </div>
 
@@ -263,21 +316,32 @@ export default function Contact() {
                     <textarea
                       required
                       rows={5}
+                      disabled={isSubmitting}
                       value={formData.message}
                       onChange={(e) =>
                         setFormData({ ...formData, message: e.target.value })
                       }
                       placeholder="Hi Arnab, we reviewed your work on Spring Boot microservices and would like to discuss..."
-                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors font-mono leading-relaxed"
+                      className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white disabled:opacity-60 transition-colors font-mono leading-relaxed"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black font-mono text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.99] cursor-pointer"
+                    disabled={isSubmitting}
+                    className="w-full py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 disabled:cursor-not-allowed text-slate-950 font-black font-mono text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.99] cursor-pointer"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>TRANSMIT DISPATCH PAYLOAD</span>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>LOGGING DISPATCH PAYLOAD...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>TRANSMIT DISPATCH PAYLOAD</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

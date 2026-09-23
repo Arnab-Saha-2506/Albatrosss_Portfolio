@@ -136,7 +136,7 @@ export default function Navbar() {
                 <span className="font-mono text-xs sm:text-sm font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1">
                   ARNAB SAHA{" "}
                   <span className="text-zinc-400 text-[10px] sm:text-xs font-normal font-mono hidden xs:inline">
-                    // Backend
+                    {"// Backend"}
                   </span>
                 </span>
                 <span className="text-[9px] sm:text-[10px] text-zinc-300 tracking-wider uppercase font-mono">
