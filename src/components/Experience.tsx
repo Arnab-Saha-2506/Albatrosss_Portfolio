@@ -14,7 +14,7 @@ import {
 import { EXPERIENCE_ITEMS } from "@/data/portfolioData";
 
 export default function Experience() {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   const toggleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
